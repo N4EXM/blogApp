@@ -4,6 +4,9 @@ import viteLogo from '/vite.svg'
 import './App.css'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import SelectedPost from './pages/SelectedPost'
 
 
 function App() {
@@ -19,6 +22,18 @@ function App() {
           <Route
             path='/'
             element={<Home/>}        
+          />
+          <Route
+            path='/Login'
+            element={<Login/>}        
+          />
+          <Route
+            path='/Register'
+            element={<Register/>}        
+          />
+          <Route
+            path='/post/:id'
+            element={<SelectedPost/>}
           />
         </Routes>
       </BrowserRouter>

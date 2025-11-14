@@ -31,15 +31,19 @@ const Home = () => {
     <Layout>
         
         <div
-            className='flex items-center justify-center w-full h-full px-64 p-5'
+            className='flex items-center justify-center w-full h-full px-64 p-5 pb-20'
         >
             <div
                 className='flex flex-col gap-4 w-full h-3/4 overflow-y-scroll'
             >
                 {
                     isLoading
-                    ?   <div>
-                            <p>
+                    ?   <div
+                            className='w-full text-white h-3/4 flex items-center justify-center'
+                        >
+                            <p
+                                className=''
+                            >
                                 Loading
                             </p>
                         </div>

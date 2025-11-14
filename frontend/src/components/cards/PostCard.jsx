@@ -1,10 +1,11 @@
 import React from 'react'
+import { Link } from 'react-router-dom';
 
 const PostCard = ({id, title, content, user, date}) => {
 
     function formatDate(isoString) {
         const date = new Date(isoString);
-        return date.toLocaleDateString('en-US', {
+        return date.toLocaleDateString('en-UK', {
             year: 'numeric',
             month: 'long',
             day: 'numeric'
@@ -12,8 +13,9 @@ const PostCard = ({id, title, content, user, date}) => {
     }
 
   return (
-    <div
+    <Link
         className='flex flex-col gap-3 rounded-sm p-5 bg-slate-900 text-slate-300'
+        to={`/post/${id}`}
     >
         <div
             className='flex flex-col gap-2'
@@ -39,7 +41,7 @@ const PostCard = ({id, title, content, user, date}) => {
                 {formatDate(date)}
             </p>
         </div>
-    </div>
+    </Link>
   )
 }
 
