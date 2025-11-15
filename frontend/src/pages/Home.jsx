@@ -14,7 +14,6 @@ const Home = () => {
             const data = await response.json()
             setPosts(data)
             setIsLoading(false)
-            console.log(data)
         }
         catch (error) {
             console.log('error:', error)

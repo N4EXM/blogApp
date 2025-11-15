@@ -14,7 +14,7 @@ function App() {
   return (
 
     <div
-      className='bg-slate-800 w-full min-h-screen'
+      className='bg-slate-800 font-poppins w-full min-h-screen'
     >
       
       <BrowserRouter>

@@ -20,7 +20,6 @@ const SelectedPost = () => {
       const data = await response.json()
       setPost(data)
       setIsLoading(false)
-      console.log(data)
     }
     catch (error) {
       console.log('error:', error)

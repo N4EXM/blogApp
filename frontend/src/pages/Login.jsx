@@ -1,16 +1,47 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 
 const Login = () => {
+
+  // navigation
+  const navigate = useNavigate()
   
+  // context
+  const { login } = useAuth()
+
   // toggles
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // state
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [error, setError] = useState("")
+
+  // functions
+  const handleSubmitLogin = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError('')
+
+    try {
+
+      await login(email, password)
+      navigate('/')
+
+    }
+    catch (error) {
+      setError(error.message)
+    }
+    finally {
+      setIsLoading(false)
+    }
+
+
+  }
   
   return (
     <div
@@ -19,10 +50,8 @@ const Login = () => {
       
       {/* form */}
       <form
-        className='flex flex-col p-8 gap-10 bg-slate-900 shadow-md shadow-slate-950 border-2 border-slate-700 rounded-sm h-120 w-md'
-        onSubmit={(e) => {
-          e.preventDefault()
-        }}
+        className='flex flex-col p-8 gap-10 bg-slate-900 shadow-md shadow-slate-950 border-2 border-slate-700 rounded-sm min-h-120 h-fit w-md'
+        onSubmit={(e) => handleSubmitLogin(e)}
       >
 
         {/* title */}
@@ -84,7 +113,7 @@ const Login = () => {
               className='w-full h-fit p-2 pl-3 rounded-md border-2 text-sm text-slate-200 outline-none border-slate-700 bg-slate-950' 
             />
             <button
-              className='absolute text-slate-200 top-9 font-medium right-3 text-sm'
+              className='absolute text-slate-500 top-[37.5px] font-medium right-3 text-sm'
               onClick={() => setShowPassword(!showPassword)}
               type='button'
             >
@@ -94,8 +123,48 @@ const Login = () => {
                 : "Hide"
               }
             </button>
+            <div
+              className='flex flex-row items-center gap-2 mt-2'
+            >
+              <input 
+                type="checkbox" 
+                checked={rememberMe}
+                onChange={() => setRememberMe(!rememberMe)}
+              />
+              <p
+                className='text-sm font-medium text-slate-600'
+              >
+                Remember me
+              </p>
+            </div>
           </div>
 
+        </div>
+
+        {/* submit and register link */}
+        <div
+          className='flex flex-col gap-5 w-full h-fit'
+        >
+          <p
+            className='text-sm text-rose-500 text-center'
+          >
+            {error}
+          </p>
+          <button
+            className='w-full bg-sky-500 font-semibold text-slate-200 p-2 rounded-md'
+          >
+            {
+              isLoading
+              ? "Submitting"
+              : "Sign In"
+            }
+          </button>
+          <Link
+            className='w-full text-center text-slate-500 hover:text-sky-600 duration-200 text-xs'
+            to={'/Register'}
+          >
+            Don't have an account? Make an account
+          </Link>
         </div>
 
 
