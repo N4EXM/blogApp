@@ -7,6 +7,8 @@ import Home from './pages/Home'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import SelectedPost from './pages/SelectedPost'
+import ProtectedRoute from './components/auth/ProtectedRoute'
+import PostsPage from './pages/PostsPage'
 
 
 function App() {
@@ -34,6 +36,14 @@ function App() {
           <Route
             path='/post/:id'
             element={<SelectedPost/>}
+          />
+          <Route
+            path='/dashboard'
+            element={
+              <ProtectedRoute>
+                <PostsPage/>
+              </ProtectedRoute>
+            }
           />
         </Routes>
       </BrowserRouter>

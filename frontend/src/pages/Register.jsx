@@ -103,7 +103,7 @@ const Register = () => {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              placeholder='Enter your email...'
+              placeholder='Enter your password...'
               className='w-full h-fit p-2 pl-3 rounded-md border-2 text-sm text-slate-200 outline-none border-slate-700 bg-slate-950' 
             />
             <button

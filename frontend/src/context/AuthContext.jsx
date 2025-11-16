@@ -19,6 +19,10 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, []);
 
+    useEffect(() => {
+        console.log("user: ", user)
+    }, [user])
+
     const checkAuth = async () => {
         const token = localStorage.getItem('token');
         if (token) {
@@ -60,6 +64,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             const data = await response.json();
+            console.log("login success")
             localStorage.setItem('token', data.token);
             setUser(data.user);
             return data;

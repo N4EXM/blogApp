@@ -14,6 +14,7 @@ const Home = () => {
             const data = await response.json()
             setPosts(data)
             setIsLoading(false)
+            console.log(data)
         }
         catch (error) {
             console.log('error:', error)
@@ -49,6 +50,7 @@ const Home = () => {
                     :   posts.length > 0
                         ?   posts.map((post) => (
                                 <PostCard
+                                    key={post.id}
                                     id={post.id}
                                     title={post.title}
                                     content={post.content}

@@ -28,6 +28,12 @@ const Navbar = () => {
           >
             Register
           </Link>
+          <Link
+            className='p-2 rounded-md bg-slate-900 text-sm text-slate-100 font-semibold px-4'
+            to='/Dashboard'
+          >
+            Posts
+          </Link>
         </div>
     </div>
   )

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Post;
+use App\Models\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -11,6 +12,27 @@ class PostController extends Controller
     public function index()
     {
         return Post::with(['user'])->get(); // Removed 'category' since you don't have it
+    }
+
+    public function getUserPosts(User $user)
+    {
+        $posts = $user->posts()
+                    ->with('user:id,name,email') // Eager load user data
+                    ->latest()
+                    ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'user' => [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email
+                ],
+                'posts' => $posts
+            ],
+            'message' => 'Posts retrieved successfully'
+        ]);
     }
 
     public function store(Request $request)

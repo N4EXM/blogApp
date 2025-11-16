@@ -13,8 +13,7 @@ Route::get('/user', function (Request $request) {
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/{id}', [PostController::class, 'show']);
 Route::post('/posts', [PostController::class, 'store']);
-
-// users
+Route::get('/users/{user}/posts', [PostController::class, 'getUserPosts']);// users
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
