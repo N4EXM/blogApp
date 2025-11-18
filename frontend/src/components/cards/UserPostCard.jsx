@@ -12,6 +12,13 @@ const UserPostCard = ({id, title, content, user, date, loadPost}) => {
         });
     }
 
+    function truncateText(str, maxLength) {
+        if (str.length > maxLength) {
+            return str.substring(0, maxLength) + '...';
+        }
+        return str;
+    }
+
   return (
     <div
         className='flex flex-col gap-3 rounded-sm p-5 bg-slate-900 text-slate-300'
@@ -29,7 +36,7 @@ const UserPostCard = ({id, title, content, user, date, loadPost}) => {
             <p
                 className='text-sm'
             >
-                {content}
+                {truncateText(content, 150)}
             </p>
         </div>
         <div

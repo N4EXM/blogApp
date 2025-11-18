@@ -12,6 +12,13 @@ const PostCard = ({id, title, content, user, date}) => {
         });
     }
 
+    function truncateText(str, maxLength) {
+        if (str.length > maxLength) {
+            return str.substring(0, maxLength) + '...';
+        }
+        return str;
+    }
+
   return (
     <Link
         className='flex flex-col gap-3 rounded-sm p-5 bg-slate-900 text-slate-300'
