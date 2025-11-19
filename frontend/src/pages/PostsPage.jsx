@@ -6,6 +6,7 @@ import UserPostCard from '../components/cards/UserPostCard'
 const PostsPage = () => {
 
   const { user } = useAuth()
+
   const [userPosts, setUserPosts] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -16,6 +17,7 @@ const PostsPage = () => {
     excerpt: '',
     content: ''
   })
+  const [selectedId, setSelectedId] = useState(null)
   const [postView, setPostView] = useState(0) // 0: no selected post, 1: new post 2: selected post
 
   // functions 
@@ -56,10 +58,66 @@ const PostsPage = () => {
     }
   }
 
-  const loadPost = () => {
+  const handleLoadNewPost = () => {
+    setPostView(1)
+    setFormData({
+      title: '',
+      excerpt: '',
+      content: ''
+    })
   }
 
-  const handleChange = (e) => {
+  const handleLoadPost = (id, title, excerpt, content) => {
+    setPostView(2)
+    setSelectedId(id)
+
+    const currentPost = {
+      title: title,
+      excerpt: excerpt,
+      content: content
+    }
+
+    setFormData(currentPost)
+    
+  }
+
+  const handleUpdatePost = async () => {
+
+    try {
+
+      const token = localStorage.getItem('token')
+      const response = await fetch(`/api/posts/${selectedId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      })
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update post');
+      }
+
+      const data = await response.json()
+
+      if (data.success) {
+        fetchUserPosts()
+      }
+      else {
+        console.log("failed to update post")
+      }
+
+    }
+    catch (error) {
+
+    }
+
+  }
+
+  const handleChangeInput = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -94,6 +152,10 @@ const PostsPage = () => {
   useEffect(() => {
     fetchUserPosts()
   }, [user?.id])
+
+  useEffect(() => {
+    console.log(formData)
+  }, [formData])
 
   if (loading) {
     return (
@@ -134,7 +196,7 @@ const PostsPage = () => {
 
         {/* new post */}
         <div
-          className={`${postView === 1 ? 'flex' : 'hidden'} gap-5 text-slate-200 flex-col items-start justify-start w-full h-full col-span-3 p-8`}
+          className={`${postView === 1 || postView === 2 ? 'flex' : 'hidden'} gap-5 text-slate-200 flex-col items-start justify-start w-full h-full col-span-3 p-8`}
         >
           {/* title */}
           <input 
@@ -142,7 +204,7 @@ const PostsPage = () => {
             name='title'
             placeholder='Enter a title...'
             value={formData.title}
-            onChange={handleChange}
+            onChange={handleChangeInput}
             className='w-full h-fit outline-none bg-slate-900 p-2 pl-3 rounded-md text-xl font-semibold'
             required
           />
@@ -150,7 +212,7 @@ const PostsPage = () => {
             type='text'
             name='excerpt'
             value={formData.excerpt}
-            onChange={handleChange}
+            onChange={handleChangeInput}
             placeholder='Enter an excerpt'
             className='w-full h-40 resize-none outline-none rounded-md font-medium p-3 bg-slate-900'
             required
@@ -159,7 +221,7 @@ const PostsPage = () => {
             type="text"
             name='content'
             value={formData.content}
-            onChange={handleChange}
+            onChange={handleChangeInput}
             className='w-full h-full outline-none rounded-md font-medium bg-slate-900 resize-none p-4'
             placeholder='Enter some content...'
             required
@@ -169,7 +231,7 @@ const PostsPage = () => {
           >
             <button
               className='p-2 rounded-full bg-emerald-500 cursor-pointer hover:bg-emerald-600 duration-200'
-              onClick={() => handleCreateNewPost()}
+              onClick={postView === 1 ? () => handleCreateNewPost() : () => handleUpdatePost()}
             >
               
               <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
@@ -179,7 +241,6 @@ const PostsPage = () => {
             </button>
           </div>
         </div>
-
 
         {/* cards */}
         <div className='flex flex-col w-full h-full p-8 col-span-2 gap-5'>
@@ -191,7 +252,7 @@ const PostsPage = () => {
             </h1>
             <button
               className='p-2 rounded-full bg-sky-500 hover:bg-sky-600 duration-200'
-              onClick={() => setPostView(1)}
+              onClick={() => handleLoadNewPost()}
             >
               <svg  xmlns="http://www.w3.org/2000/svg" width="20" height="20"  
                 fill="#ffffff" viewBox="0 0 24 24" >
@@ -215,7 +276,7 @@ const PostsPage = () => {
                     content={post.content}
                     user={post.user}
                     date={post.published_at || post.created_at}
-                    loadPost={() => {}}
+                    handleLoadPost={() => handleLoadPost(post.id, post.title, post.excerpt, post.content)}
                   />
                 ))}
               </div>

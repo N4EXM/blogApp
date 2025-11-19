@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 
-const UserPostCard = ({id, title, content, user, date, loadPost}) => {
+const UserPostCard = ({id, title, content, user, date, handleLoadPost}) => {
 
     function formatDate(isoString) {
         const date = new Date(isoString);
@@ -21,9 +21,9 @@ const UserPostCard = ({id, title, content, user, date, loadPost}) => {
 
   return (
     <div
-        className='flex flex-col gap-3 rounded-sm p-5 bg-slate-900 text-slate-300'
-        to={`/post/${id}`}
-        onClick={loadPost}
+        className='flex flex-col gap-3 rounded-sm p-5 bg-slate-900 text-slate-300 cursor-pointer'
+        // to={`/post/${id}`}
+        onClick={handleLoadPost}
     >
         <div
             className='flex flex-col gap-2'

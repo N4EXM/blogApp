@@ -88,7 +88,18 @@ class PostController extends Controller
 
         $post->update($validated);
 
-        return response()->json($post);
+        if ($post) {
+            return response()->json([
+                'success' => true
+            ]);
+        }
+        else {
+            return response()->json([
+                'success' => false
+            ]);
+        }
+
+        
     }
 
     public function destroy(Post $post)
