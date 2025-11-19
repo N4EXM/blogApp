@@ -4,15 +4,21 @@ import { useAuth } from '../context/AuthContext'
 import UserPostCard from '../components/cards/UserPostCard'
 
 const PostsPage = () => {
+
   const { user } = useAuth()
   const [userPosts, setUserPosts] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
   // state
-  const [selectedPostTitle, setSelectedPostTitle] = useState("")
-  const [selectedPostContent, setSelectedPostContent] = useState("")
+  const [formData, setFormData] = useState({
+    title: '',
+    excerpt: '',
+    content: ''
+  })
   const [postView, setPostView] = useState(0) // 0: no selected post, 1: new post 2: selected post
+
+  // functions 
 
   const fetchUserPosts = async () => {
     if (!user?.id) {
@@ -50,13 +56,39 @@ const PostsPage = () => {
     }
   }
 
-  const loadPost = (title, content) => {
-    setSelectedPostTitle(title)
-    set
+  const loadPost = () => {
   }
 
-  const handleCreateNewPost = () => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleCreateNewPost = async () => {
     
+    const token = localStorage.getItem("token")
+    const response = await fetch('/api/posts', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(formData)
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.message || 'Failed to create a post')
+    }
+
+    // const newPost = await response.json()
+
+    fetchUserPosts()
+
   }
 
   useEffect(() => {
@@ -107,20 +139,40 @@ const PostsPage = () => {
           {/* title */}
           <input 
             type="text" 
+            name='title'
             placeholder='Enter a title...'
+            value={formData.title}
+            onChange={handleChange}
             className='w-full h-fit outline-none bg-slate-900 p-2 pl-3 rounded-md text-xl font-semibold'
+            required
           />
+          <textarea 
+            type='text'
+            name='excerpt'
+            value={formData.excerpt}
+            onChange={handleChange}
+            placeholder='Enter an excerpt'
+            className='w-full h-40 resize-none outline-none rounded-md font-medium p-3 bg-slate-900'
+            required
+          ></textarea>
           <textarea
+            type="text"
+            name='content'
+            value={formData.content}
+            onChange={handleChange}
             className='w-full h-full outline-none rounded-md font-medium bg-slate-900 resize-none p-4'
             placeholder='Enter some content...'
+            required
           ></textarea>
           <div
             className='w-full h-fit flex items-center justify-end'
           >
             <button
-              className='p-2 rounded-full bg-emerald-500 '
+              className='p-2 rounded-full bg-emerald-500 cursor-pointer hover:bg-emerald-600 duration-200'
+              onClick={() => handleCreateNewPost()}
             >
-              <svg  xmlns="http://www.w3.org/2000/svg" width="20" height="20"  
+              
+              <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
                 fill="#ffffff" viewBox="0 0 24 24" >
                 <path d="M9 15.59 4.71 11.3 3.3 12.71l5 5c.2.2.45.29.71.29s.51-.1.71-.29l11-11-1.41-1.41L9.02 15.59Z"></path>
               </svg>

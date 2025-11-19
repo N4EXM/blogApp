@@ -29,7 +29,7 @@ const UserPostCard = ({id, title, content, user, date, loadPost}) => {
             className='flex flex-col gap-2'
         >
             <h1
-                className='font-medium text-xl text-slate-100'
+                className='font-bold text-xl text-slate-100'
             >
                 {title}
             </h1>
@@ -40,7 +40,7 @@ const UserPostCard = ({id, title, content, user, date, loadPost}) => {
             </p>
         </div>
         <div
-            className='flex flex-row items-center justify-between w-full h-fit'
+            className='flex flex-row items-center justify-between w-full h-fit text-sm font-semibold'
         >
             <h1>
                 {user.name}

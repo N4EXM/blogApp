@@ -94,6 +94,11 @@ const SelectedPost = () => {
                   <p
                     className='text-slate-300'
                   >
+                    {post.excerpt}
+                  </p>
+                  <p
+                    className='text-slate-300'
+                  >
                     {post.content}
                   </p>
                 </div>

@@ -35,16 +35,34 @@ class PostController extends Controller
         ]);
     }
 
+    // app/Http/Controllers/Api/PostController.php
     public function store(Request $request)
     {
+        // Validate the incoming data
         $validated = $request->validate([
-            'title' => 'required|string|max:255', // Changed to match your model
-            'content' => 'required|string', // Changed to match your model
-            'excerpt' => 'sometimes|string', // Added
-            'user_id' => 'sometimes|exists:users,id' // Added
+            'title' => 'required|string|max:255',
+            'content' => 'required|string',
+            'excerpt' => 'nullable|string|max:500',
         ]);
 
+        // Debug: Check if user is authenticated
+        if (!auth()->check()) {
+            return response()->json([
+                'message' => 'Unauthenticated. Please log in.'
+            ], 401);
+        }
+
+        // Add the authenticated user's ID
+        $validated['user_id'] = auth()->id();
+        
+        // Set published_at if you want it to be published immediately
+        $validated['published_at'] = now();
+
+        // Create the post
         $post = Post::create($validated);
+
+        // Load relationships if needed
+        $post->load('user');
 
         return response()->json($post, 201);
     }
