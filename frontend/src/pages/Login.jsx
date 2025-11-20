@@ -29,7 +29,7 @@ const Login = () => {
 
     try {
 
-      await login(email, password)
+      await login(email, password, rememberMe)
       navigate('/')
 
     }
@@ -39,7 +39,6 @@ const Login = () => {
     finally {
       setIsLoading(false)
     }
-
 
   }
   

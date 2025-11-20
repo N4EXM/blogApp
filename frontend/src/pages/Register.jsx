@@ -1,17 +1,45 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 
 const Register = () => {
+
+  const { register } = useAuth()
+
+  const navigate = useNavigate()
 
   // toggles
   const [rememberMe, setRememberMe] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   // state
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [password_confirmation, setPassword_confirmation] = useState("")
+  const [error, setError] = useState('')
 
+  // functions
+  const handleSubmitRegister = async (e) => {
+    e.preventDefault()
+    setIsLoading(true)
+    setError('')
+
+    try {
+
+      await register(name, email, password, password_confirmation, rememberMe)
+      navigate('/')
+
+    }
+    catch (error) {
+      setError(error.message)
+    }
+    finally {
+      setIsLoading(false)
+    }
+
+  }
 
   return (
     
@@ -22,9 +50,7 @@ const Register = () => {
       {/* form */}
       <form
         className='flex flex-col p-8 gap-10 bg-slate-900 shadow-md shadow-slate-950 border-2 border-slate-700 rounded-sm min-h-120 h-fit w-md'
-        onSubmit={(e) => {
-          e.preventDefault()
-        }}
+        onSubmit={(e) => handleSubmitRegister(e)}
       >
 
         {/* title */}
@@ -96,7 +122,7 @@ const Register = () => {
               htmlFor="password"
               className='text-slate-200 text-sm pl-2 font-medium'
             >
-              password:
+              Password:
             </label>
             <input 
               type={showPassword ? "text" : "password"}
@@ -104,6 +130,37 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder='Enter your password...'
+              className='w-full h-fit p-2 pl-3 rounded-md border-2 text-sm text-slate-200 outline-none border-slate-700 bg-slate-950' 
+            />
+            <button
+              className='absolute text-slate-500 top-[37.5px] font-medium right-3 text-sm'
+              onClick={() => setShowPassword(!showPassword)}
+              type='button'
+            >
+              {
+                showPassword
+                ? "Show"
+                : "Hide"
+              }
+            </button>
+          </div>
+
+          {/* confirm password */}
+          <div
+            className='flex flex-col gap-2 w-full h-fit relative'
+          >
+            <label 
+              htmlFor="password"
+              className='text-slate-200 text-sm pl-2 font-medium'
+            >
+              Confirm password:
+            </label>
+            <input 
+              type={showPassword ? "text" : "password"}
+              value={password_confirmation}
+              onChange={(e) => setPassword_confirmation(e.target.value)}
+              required
+              placeholder='Confirm your password...'
               className='w-full h-fit p-2 pl-3 rounded-md border-2 text-sm text-slate-200 outline-none border-slate-700 bg-slate-950' 
             />
             <button
