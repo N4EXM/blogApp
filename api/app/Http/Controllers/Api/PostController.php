@@ -80,32 +80,78 @@ class PostController extends Controller
 
     public function update(Request $request, Post $post)
     {
+        // Add authorization check
+        if ($post->user_id !== auth()->id()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthorized to update this post'
+            ], 403);
+        }
+
         $validated = $request->validate([
-            'title' => 'sometimes|string|max:255', // Changed
-            'content' => 'sometimes|string', // Changed
-            'excerpt' => 'sometimes|string' // Added
+            'title' => 'sometimes|string|max:255',
+            'content' => 'sometimes|string',
+            'excerpt' => 'sometimes|string'
         ]);
 
-        $post->update($validated);
+        try {
+            $updated = $post->update($validated);
 
-        if ($post) {
+            if ($updated) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Post updated successfully',
+                    'data' => $post->fresh() // Get fresh data from database
+                ]);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No changes were made to the post'
+                ], 422);
+            }
+
+        } catch (\Exception $e) {
             return response()->json([
-                'success' => true
-            ]);
+                'success' => false,
+                'message' => 'Server error while updating post',
+                'error' => $e->getMessage()
+            ], 500);
         }
-        else {
+    }
+    public function destroy(Post $post)
+    {
+        // Add authorization check
+        if ($post->user_id !== auth()->id()) {
             return response()->json([
-                'success' => false
-            ]);
+                'success' => false,
+                'message' => 'Unauthorized to update this post'
+            ], 403);
+        }
+
+        try {
+            $deletedPost = $post->delete();
+
+            if ($deletedPost) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'post successfully deleted'
+                ]);
+            }
+            else {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'post not succcessfully deleted'
+                ]);
+            }
+        }
+        catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Server error while updating post',
+                'error' => $e->getMessage()
+            ], 500);
         }
 
         
-    }
-
-    public function destroy(Post $post)
-    {
-        $post->delete();
-
-        return response()->json(null, 204);
     }
 }

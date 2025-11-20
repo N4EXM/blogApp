@@ -40,11 +40,11 @@ const PostsPage = () => {
       }
       
       const data = await response.json()
-      console.log("Full API response:", data)
+      // console.log("Full API response:", data)
       
       // Extract posts from different possible response structures
       const posts = data.posts || data.data?.posts || data.data || []
-      console.log("Extracted posts:", posts)
+      // console.log("Extracted posts:", posts)
       
       setUserPosts(posts)
     }
@@ -81,41 +81,92 @@ const PostsPage = () => {
     
   }
 
+  // const handleUpdatePost = async () => {
+
+  //   try {
+
+  //     const token = localStorage.getItem('token')
+  //     const response = await fetch(`/api/posts/${selectedId}`, {
+  //       method: 'PUT',
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         'Authorization': `Bearer ${token}`,
+  //       },
+  //       body: JSON.stringify(formData)
+  //     })
+
+  //     if (!response.ok) {
+  //       const errorData = await response.json();
+  //       throw new Error(errorData.message || 'Failed to update post');
+  //     }
+
+  //     const data = await response.json()
+
+  //     if (data.success === true) {
+  //       fetchUserPosts()
+  //     }
+  //     else {
+  //       console.log("message", data.message)
+  //     }
+
+  //   }
+  //   catch (error) {
+  //     console.error("error:", error)
+  //   }
+
+  // }
+
   const handleUpdatePost = async () => {
-
     try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+          throw new Error('No authentication token found');
+      }
 
-      const token = localStorage.getItem('token')
       const response = await fetch(`/api/posts/${selectedId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      })
+          method: 'PUT',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${token}`,
+          },
+          body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      // Handle different HTTP status codes
+      if (response.status === 401) {
+          localStorage.removeItem('token');
+          throw new Error('Session expired. Please log in again.');
+      }
+
+      if (response.status === 403) {
+          throw new Error('You are not authorized to update this post.');
+      }
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update post');
+          throw new Error(data.message || 'Failed to update post');
       }
 
-      const data = await response.json()
-
+      // Check success flag from Laravel
       if (data.success) {
-        fetchUserPosts()
+          console.log('Post updated successfully:', data.message);
+          fetchUserPosts(); // Refresh the posts list
+          // Optional: Show success message to user
+          alert('Post updated successfully!');
+      } else {
+          console.log("Failed to update post:", data.message);
+          // Show error to user
+          alert(`Update failed: ${data.message}`);
       }
-      else {
-        console.log("failed to update post")
-      }
 
+    } catch (error) {
+      // Actually handle the error
+      console.error('Update error:', error);
+      alert(`Error: ${error.message}`);
     }
-    catch (error) {
-
-    }
-
-  }
+  };
 
   const handleChangeInput = (e) => {
     const { name, value } = e.target;
@@ -149,13 +200,57 @@ const PostsPage = () => {
 
   }
 
+  const handleDeletePost = async () => {
+
+    try {
+
+      const token = localStorage.getItem('token')
+
+      if (!token) {
+        throw new Error('Authentication required. Please log in.');
+      }
+
+      const response = await fetch(`/api/posts/${selectedId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      })
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        throw new Error('Session expired. Please log in again.');
+      }
+
+      if (response.status === 403) {
+        throw new Error('You are not authorized to delete this post.');
+      }
+
+      const data = await response.json()
+
+      if (data.success === true) {
+        fetchUserPosts()
+        alert('Post deleted successfully!');
+      }
+      else {
+        alert('Post unable to be deleted!');
+      }
+
+    }
+    catch (error) {
+      console.error('error: ', error)
+    }
+
+  }
+
   useEffect(() => {
     fetchUserPosts()
   }, [user?.id])
 
-  useEffect(() => {
-    console.log(formData)
-  }, [formData])
+  // useEffect(() => {
+  //   console.log(formData)
+  // }, [formData])
 
   if (loading) {
     return (
@@ -227,13 +322,18 @@ const PostsPage = () => {
             required
           ></textarea>
           <div
-            className='w-full h-fit flex items-center justify-end'
+            className='w-full h-fit flex flex-row items-center justify-end gap-2'
           >
+            <button
+              className={`${postView === 2 ? 'block' : 'hidden'} p-2 rounded-full bg-rose-500 cursor-pointer hover:bg-rose-600 duration-200`}
+              onClick={() => handleDeletePost()}
+            >
+              <svg  xmlns="http://www.w3.org/2000/svg" width={24} height={24} fill={"#ffffff"} viewBox="0 0 24 24">{/* Boxicons v3.0.4 https://boxicons.com | License  https://docs.boxicons.com/free */}<path d="M17 6V4c0-1.1-.9-2-2-2H9c-1.1 0-2 .9-2 2v2H2v2h2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8h2V6zM9 4h6v2H9zM6 20V8h12v12z"></path><path d="M9 10h2v8H9zM13 10h2v8h-2z"></path></svg>
+            </button>
             <button
               className='p-2 rounded-full bg-emerald-500 cursor-pointer hover:bg-emerald-600 duration-200'
               onClick={postView === 1 ? () => handleCreateNewPost() : () => handleUpdatePost()}
             >
-              
               <svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
                 fill="#ffffff" viewBox="0 0 24 24" >
                 <path d="M9 15.59 4.71 11.3 3.3 12.71l5 5c.2.2.45.29.71.29s.51-.1.71-.29l11-11-1.41-1.41L9.02 15.59Z"></path>
